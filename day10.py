@@ -12,6 +12,7 @@ PIPE_TO_COORDS = {
     "7":((SOUTH),(WEST)),
     "F":((SOUTH),(EAST))
 }
+POSSIBLE_S_PIPES = ["|", "-", "L", "J", "7", "F"]
 
 def rotate_east(direction):
     if direction == NORTH:
@@ -90,10 +91,9 @@ def solve1(input_data):
             if v == "S":
                 start_pos = (r,c)
     
-    possible_S_pipes = ["|", "-", "L", "J", "7", "F"]
     end = (-1,-1)
     max_loop_length = 0
-    for possible_S in possible_S_pipes:
+    for possible_S in POSSIBLE_S_PIPES:
         visited = set()
 
         neighbours = get_neighbour_coords(start_pos, possible_S)
@@ -143,13 +143,13 @@ def solve2(input_data):
             if v == "S":
                 start_pos = (r,c)
     
-    possible_S_pipes = ["|", "-", "L", "J", "7", "F"]
+    
     end = (-1,-1)
     max_loop_length = 0
     max_visited = set()
     max_path = []
     
-    for possible_S in possible_S_pipes:
+    for possible_S in POSSIBLE_S_PIPES:
         visited = set()
         path = []
         neighbours = get_neighbour_coords(start_pos, possible_S)
