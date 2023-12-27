@@ -1,4 +1,5 @@
 import sys
+import heapq
 
 NORTH = 0
 EAST = 1
@@ -17,14 +18,6 @@ INCREMENT = {
     SOUTH: D_SOUTH,
     WEST: D_WEST,
 }
-
-class Node:
-    def __init__(self, current, prev_d, straight_amt, total, path):
-        self.current = current
-        self.prev_d = prev_d
-        self.straight_amt = straight_amt
-        self.total = total
-        self.path = path
 
 def print_path(G, path):
     for r in range(r_max):
@@ -49,32 +42,18 @@ def solve1(input_data):
     
     start = (0,0)
     end = (r_max - 1, c_max - 1)
-    # pos, came from, val
-    start_node = Node(start, SOUTH, 0, 0, [])
-    ways_left = [start_node]
+    ways_left = []
+    # total, pos, came from, amount in a dir
+    heapq.heappush(ways_left, (0, start, SOUTH, 0))
     ans = sys.maxsize
-    min_node = None
     best_at = {}
     while len(ways_left) > 0:
-        cur_node = ways_left.pop()
-        cur = cur_node.current
-        prev_d = cur_node.prev_d
-        straight_amt = cur_node.straight_amt
-        t = cur_node.total
-        # path = cur_node.path
+        t, cur, prev_d, straight_amt = heapq.heappop(ways_left)  
 
-        
-        if straight_amt == 1:
-            if (cur,prev_d) not in best_at:
-                best_at[(cur,prev_d)] = t
-            else:
-                if best_at[(cur,prev_d)] <= t:
-                    continue
-                else:
-                    best_at[(cur,prev_d)] = t
+        if (cur,prev_d,straight_amt) not in best_at:
+            best_at[(cur,prev_d,straight_amt)] = t
         else:
-            if (cur,prev_d) in best_at and best_at[(cur,prev_d)] <= t:
-                continue
+            continue
                 
         for d in DIRECTIONS:
             new_cur = (cur[0] + INCREMENT[d][0], cur[1] + INCREMENT[d][1])
@@ -92,20 +71,15 @@ def solve1(input_data):
                 new_straight_amt = 1
             if new_straight_amt > 3:
                 continue
-            #new_node = Node(new_cur, d, new_straight_amt, new_t, path.copy())
-            new_node = Node(new_cur, d, new_straight_amt, new_t, [])
-            new_node.path.append(new_cur)
+
             if new_cur == end:
                 if new_t < ans:
                     ans = new_t
-                    min_node = new_node
                     print(ans)
                 continue
 
-            ways_left.append(new_node)
-            # print(ways_left)
-    # print(min_node.path)
-    # print_path(G, min_node.path)
+            heapq.heappush(ways_left, (new_t, new_cur, d, new_straight_amt))
+
     return ans
 
 def solve2(input_data):
@@ -121,31 +95,18 @@ def solve2(input_data):
     
     start = (0,0)
     end = (r_max - 1, c_max - 1)
-    # pos, came from, val
-    start_node = Node(start, SOUTH, 0, 0, [])
-    ways_left = [start_node]
-    ans = 2000
-    min_node = None
+    ways_left = []
+    # total, pos, came from, amount in a dir
+    heapq.heappush(ways_left, (0, start, SOUTH, 0))
+    ans = sys.maxsize
     best_at = {}
     while len(ways_left) > 0:
-        cur_node = ways_left.pop()
-        cur = cur_node.current
-        prev_d = cur_node.prev_d
-        straight_amt = cur_node.straight_amt
-        t = cur_node.total
-        # path = cur_node.path
-        
-        if straight_amt == 4:
-            if (cur,prev_d) not in best_at:
-                best_at[(cur,prev_d)] = t
-            else:
-                if best_at[(cur,prev_d)] <= t:
-                    continue
-                else:
-                    best_at[(cur,prev_d)] = t
+        t, cur, prev_d, straight_amt = heapq.heappop(ways_left)  
+
+        if (cur,prev_d,straight_amt) not in best_at:
+            best_at[(cur,prev_d,straight_amt)] = t
         else:
-            if (cur,prev_d) in best_at and best_at[(cur,prev_d)] <= t:
-                continue
+            continue
                 
         for d in DIRECTIONS:
             new_straight_amt = straight_amt
@@ -175,20 +136,14 @@ def solve2(input_data):
             if new_t > ans:
                 continue
 
-            # new_node = Node(new_cur, d, new_straight_amt, new_t, path.copy())
-            new_node = Node(new_cur, d, new_straight_amt, new_t, [])
-            new_node.path.append(new_cur)
             if new_cur == end:
                 if new_t < ans:
                     ans = new_t
-                    min_node = new_node
                     print(ans)
                 continue
 
-            ways_left.append(new_node)
-            # print(ways_left)
-    # print(min_node.path)
-    # print_path(G, min_node.path)
+            heapq.heappush(ways_left, (new_t, new_cur, d, new_straight_amt))
+
     return ans
 
 if __name__ == "__main__":
@@ -206,10 +161,10 @@ if __name__ == "__main__":
 
     input_data_file.close()
 
-    # ans1 = solve1(input_data_text)
+    ans1 = solve1(input_data_text)
     ans2 = solve2(input_data_text)
 
-    # print(f"Part 1: {ans1}")
+    print(f"Part 1: {ans1}")
     print(f"Part 2: {ans2}")
 
 
