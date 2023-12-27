@@ -130,12 +130,12 @@ def solve2(input_data):
         startings.append(((r_max-1,c),NORTH))
     
     count = 0
-    print(r_max*2 + c_max*2)
+    total_needed = r_max*2 + c_max*2
     for start, start_d in startings:
         energy_amount = run_beams(G, start, start_d)
         max_energy = max(max_energy, energy_amount)
         count += 1
-        print(count)
+        print(count, "out of", total_needed)
         
 
     return max_energy
